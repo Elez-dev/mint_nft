@@ -1,5 +1,9 @@
 from web3 import Web3
 import time
+import random
+
+time_delay_min = 30  # Минимальная и
+time_delay_max = 60  # Максимальная задержка между акками в секундах
 
 RETRY = 20
 
@@ -86,3 +90,4 @@ if __name__ == '__main__':
     while keys_list:
         key = keys_list.pop(0)
         mint(key)
+        time.sleep(random.randint(time_delay_min, time_delay_max))
