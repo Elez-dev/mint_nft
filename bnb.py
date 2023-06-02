@@ -49,14 +49,12 @@ def mint(private_key, retry=0):
         while check_transaction_receipt(web3, tx_hash):
             count += 1
             if count > RETRY:
-                print('Транзакция сфейлилась, пытаюсь еще раз')
-                return 0
+                raise ValueError('Транзакция сфейлилась, пытаюсь еще раз')
             time.sleep(30)
         while True:
             res_ = get_transaction_receipt(web3, tx_hash)
             if res_ == '0':
-                print('Транзакция сфейлилась, пытаюсь еще раз')
-                return 0
+                raise ValueError('Транзакция сфейлилась, пытаюсь еще раз')
             elif res_ == '1':
                 break
             elif res_ == 0:
