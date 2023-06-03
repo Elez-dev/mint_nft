@@ -5,27 +5,6 @@ import random
 time_delay_min = 30  # Минимальная и
 time_delay_max = 60  # Максимальная задержка между акками в секундах
 
-RETRY = 20
-
-
-def check_transaction_receipt(web3, _hash):
-    try:
-        web3.eth.get_transaction_receipt(_hash)
-        print('Транзакция смайнилась успешно')
-        return 0
-    except Exception as error:
-        print(f'Транзакция еще не смайнилась  ||  {error}')
-        return 1
-
-
-def get_transaction_receipt(web3, _hash):
-    try:
-        time.sleep(5)
-        txn_receipt = web3.eth.get_transaction_receipt(_hash)
-        return str(txn_receipt['status'])
-    except:
-        return 0
-
 
 def mint(private_key, retry=0):
     try:
@@ -45,20 +24,13 @@ def mint(private_key, retry=0):
 
         raw_tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
         tx_hash = web3.to_hex(raw_tx_hash)
-        count = 0
-        while check_transaction_receipt(web3, tx_hash):
-            count += 1
-            if count > RETRY:
-                raise ValueError('Транзакция сфейлилась, пытаюсь еще раз')
-            time.sleep(30)
-        while True:
-            res_ = get_transaction_receipt(web3, tx_hash)
-            if res_ == '0':
-                raise ValueError('Транзакция сфейлилась, пытаюсь еще раз')
-            elif res_ == '1':
-                break
-            elif res_ == 0:
-                continue
+        
+        tx_receipt = web3.eth.wait_for_transaction_receipt(raw_tx_hash, timeout=300)
+        if tx_receipt.status == 1:
+            print(f'Транзакция смайнилась успешно')
+        else:
+            print(f'Транзакция сфейлилась, пытаюсь еще раз')
+            raise ValueError("Транзакция сфейлилась, пытаюсь еще раз")
 
         print(f'mint || https://bscscan.com/tx/{tx_hash}\n')
         return 1
