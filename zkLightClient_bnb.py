@@ -29,7 +29,6 @@ def mint(private_key, retry=0):
         if tx_receipt.status == 1:
             print(f'Транзакция смайнилась успешно')
         else:
-            print(f'Транзакция сфейлилась, пытаюсь еще раз')
             raise ValueError("Транзакция сфейлилась, пытаюсь еще раз")
 
         print(f'mint || https://bscscan.com/tx/{tx_hash}\n')
